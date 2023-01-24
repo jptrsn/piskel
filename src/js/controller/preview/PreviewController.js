@@ -5,9 +5,10 @@
   var PREVIEW_SIZE = 200;
   var RENDER_MINIMUM_DELAY = 300;
 
-  ns.PreviewController = function (piskelController, container) {
+  ns.PreviewController = function (piskelController, container, matrixStreamService) {
     this.piskelController = piskelController;
     this.container = container;
+    this.matrixStreamService = matrixStreamService;
 
     this.elapsedTime = 0;
     this.currentIndex = 0;
@@ -86,9 +87,9 @@
       this.currentIndex = index;
       var frame = pskl.utils.LayerUtils.mergeFrameAt(this.piskelController.getLayers(), index);
       this.renderer.render(frame);
+      this.matrixStreamService.render(frame);
       this.renderFlag = false;
       this.lastRenderTime = Date.now();
-
       this.popupPreviewController.render(frame);
     }
   };

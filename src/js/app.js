@@ -67,9 +67,14 @@
         document.querySelector('#drawing-canvas-container'));
       this.drawingController.init();
 
+      this.matrixStreamService = new pskl.service.MatrixStreamService(this.piskelController);
+      this.matrixStreamService.init();
+
       this.previewController = new pskl.controller.preview.PreviewController(
         this.piskelController,
-        document.querySelector('#animated-preview-canvas-container'));
+        document.querySelector('#animated-preview-canvas-container'),
+        this.matrixStreamService
+        );
       this.previewController.init();
 
       this.minimapController = new pskl.controller.MinimapController(

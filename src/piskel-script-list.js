@@ -185,6 +185,7 @@
   "js/service/storage/DesktopStorageService.js",
   "js/service/BackupService.js",
   "js/service/BeforeUnloadService.js",
+  "js/service/MatrixStreamService.js",
   "js/service/HistoryService.js",
   "js/service/color/ColorSorter.js",
   "js/service/palette/CurrentColorsPalette.js",
