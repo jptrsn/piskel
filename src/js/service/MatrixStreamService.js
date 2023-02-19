@@ -1,7 +1,7 @@
 
 (function () {
     var ns = $.namespace('pskl.service');
-    
+    var MAX_SEGMENT_LENGTH = 80;
   
     ns.MatrixStreamService = function (piskelController) {
       this.piskelController = piskelController;
@@ -21,6 +21,11 @@
       };
       this.client.onclose = () => {
         this.connected = false;
+        console.log('closed', this);
+        setTimeout(function() { 
+          console.log('reattaching',this)
+          this.init()
+        }.bind(this), 5000);
       };
       this.client.onerror = (e) => {
         console.log('client error', e);
@@ -29,18 +34,21 @@
 
     ns.MatrixStreamService.prototype.render = function (frame) {
       if (this.client) {
-        console.log('connected', this.connected, frame.pixels.length);
-        var colors = [];
-        for (var i = 0; i < frame.pixels.length; i++) {
-          colors.push(pskl.utils.intToHex(frame.pixels[i]));
-        }
-        var commands = this.gridToPixels_(colors);
+        // console.log('connected', this.connected);
         if (this.connected) {
+          var colors = [];
+          for (var i = 0; i < frame.pixels.length; i++) {
+            colors.push(pskl.utils.intToHex(frame.pixels[i]));
+          }
+          // var commands = this.gridToPixels_(colors);
+          var commands = this.gridToSegments_(colors);
+          console.log('commands', commands.length);
           for (let i in commands) {
             this.client.send(JSON.stringify(commands[i]));
           }
+        } else {
+          console.log('disconnected')
         }
-        
       }
     }
 
@@ -61,7 +69,7 @@
           start = i;
           lastColor = thisColor;
         }
-        if (segments.length > 200) {
+        if (segments.length > MAX_SEGMENT_LENGTH) {
           rtn.push(this.arrayToApiCommand_(segments));
           segments = [];
         }
@@ -86,7 +94,7 @@
           var colorString = grid[i].substring(1,7).toUpperCase();
           segments.push(i, colorString)
         }
-        if (segments.length > 200) {
+        if (segments.length > MAX_SEGMENT_LENGTH) {
           rtn.push(this.arrayToApiCommand_(segments));
           segments = [];
         }
